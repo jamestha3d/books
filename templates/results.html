@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title%}
+results
+{% endblock %}
+
+{% block main %}
+
+
+<!--{{ results }}
+
+{{ titles}}-->
+
+<!--<form action="/search" method="POST">
+  <div class="form-group">
+  <input class="form-control" autofocus type="text" name="search" placeholder="search">
+  <button type="submit" class="btn btn-primary"> search </button>
+  </div>
+</form>-->
+<br>
+<h4 class="results"> Search Results </h4> <br><br>
+
+{% if not results %}
+<a> No Results Found </a>
+{% else %}
+<table>
+	<tr>
+		<th>Title</th>
+		<th>Author</th>
+		<th>Year</th>
+		<th>ISBN</th>
+	</tr>
+	{% for result in results%}
+	<tr>
+		<td> <a href="{{ url_for('title', info=result.isbn) }}"> {{result.title}} </a></td>
+		<td> {{result.author}} </td>
+		<td> {{result.year}} </td>
+		<td> {{result.isbn}} </td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+
+{% endblock %}

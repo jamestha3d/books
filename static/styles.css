@@ -62,3 +62,17 @@ th, td
 {
     padding: 15px;
 }
+
+.result
+{
+    text-align: 
+}
+
+#info{
+    border-bottom: 1px solid black;
+    border-width: 100%
+}
+#logo{
+    color: green;
+    text-shadow: transparent;
+}
