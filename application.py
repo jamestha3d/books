@@ -66,19 +66,19 @@ def register():
 		#Register User
 		username = request.form.get("username").lower()
 		if not username:
-			return "did not provide a username"
+			return render_template("error.html", message="did not provide a username")
 		password = request.form.get("password")
 		if not password:
-			return "did not provide password"
+			return render_template("error.html", message="did not provide password")
 		password2 = request.form.get("password2")
 		if not password2:
-			return "did not provide password confirmation"
+			return render_template("error.html", message="did not provide password confirmation")
 		if password != password2:
-			return "password mismatch"
+			return render_template("error.html", message="password mismatch")
 		#check if user does not exist
 		rows = db.execute("SELECT * FROM users WHERE user_id = :username", {"username": username}).fetchall()
 		if rows:
-		 	return "Username already taken"
+		 	return render_template("error.html", message="Username already taken")
 		#insert user into users table
 		db.execute("INSERT INTO users (user_id, hash) VALUES (:username, :hash)", {"username": username, "hash": hashword(password)})
 		db.commit()
@@ -125,6 +125,7 @@ def review(isbn):
 #	flight = int(request.form.get("name"))
 #except ValueError:
 	return render_template("success.html", message= "review posted successfully!")
+	
 	#else:
 		#return render_template("error.html", message="POSTS REQUESTS ONLY!")
 @app.route("/title/<string:info>")
@@ -149,10 +150,14 @@ def title(info):
 	res = res.json()
 	rating = res["books"][0]["work_ratings_count"]
 	avg = res["books"][0]["average_rating"]
+	
 
 	return render_template("info.html", book = book, comment = comment, display = display, shows=shows, rating = rating, avg =avg)
 
-	
+@app.route("/user")
+def user():
+
+	return render_template("")	
 @app.route("/api/<string:isbn>")
 def book_api(isbn):
 	rows = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
