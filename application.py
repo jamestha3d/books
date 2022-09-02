@@ -15,9 +15,10 @@ if not os.getenv("DATABASE_URL"):
 
 
 #CONFIGURE FLASK
+""" MAKE SURE TO CREATE USER TABLE"""
 #export FLASK_APP=application.py
 #export FLASK_DEBUG=1
-#export DATABASE_URL="postgres://gwwwcblhdczxol:67b0d4d765d6cf79bb87facf7af6d0b570dc2d4fa774627f87a6a615e7d542a1@ec2-18-233-32-61.compute-1.amazonaws.com:5432/d6rc68lbapddqb"
+#export DATABASE_URL="postgresql://gwwwcblhdczxol:67b0d4d765d6cf79bb87facf7af6d0b570dc2d4fa774627f87a6a615e7d542a1@ec2-18-233-32-61.compute-1.amazonaws.com:5432/d6rc68lbapddqb"
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -76,6 +77,7 @@ def register():
 		if password != password2:
 			return render_template("error.html", message="password mismatch")
 		#check if user does not exist
+		db.execute("CREATE TABLE  IF NOT EXISTS users (id INTEGER PRIMARY KEY autoincrement, user_id VARCHAR, hash VARCHAR(4)")
 		rows = db.execute("SELECT * FROM users WHERE user_id = :username", {"username": username}).fetchall()
 		if rows:
 		 	return render_template("error.html", message="Username already taken")
@@ -98,10 +100,12 @@ def search():
 		return render_template("login.html")
 	if request.method == "POST":
 		entry = request.form.get("search")
+		entry_lower = entry.lower()
+		entry_upper = entry.capitalize()
 		if not entry:
 			return "enter a search term"
 		#perform database query with entry
-		results= db.execute("SELECT isbn, author, title, year FROM books WHERE isbn LIKE :entry OR author LIKE :entry OR title LIKE :entry", {"entry": '%' +entry+ '%'}).fetchall()
+		results= db.execute("SELECT isbn, author, title, year FROM books WHERE isbn LIKE :entry OR isbn LIKE :entry2 OR author LIKE :entry OR author LIKE :entry2 OR title LIKE :entry  OR title LIKE :entry2", {"entry": '%' +entry_lower+ '%', "entry2": '%' +entry_upper+ '%'}).fetchall()
 		return render_template("results.html", results=results)
 	else:
 		return render_template("index.html")
