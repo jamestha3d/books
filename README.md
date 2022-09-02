@@ -1,8 +1,7 @@
 # Review Hub
 
-This is Review Hub. 
+A book Review Website using the goodreads API.
 
-A book Review Website.
+This app also provides an API function which is currently unavailable due to deprecation of goodreads API
 
-This app also provides an API accessible at:
-
+Live demonstration at https://books3d.herokuapp.com/
