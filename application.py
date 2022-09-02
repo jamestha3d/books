@@ -29,6 +29,8 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 #set up log in info
+db.execute("CREATE TABLE IF NOT EXISTS reviews (id SERIAL PRIMARY KEY, user_id VARCHAR, isbn VARCHAR, rating INTEGER, comment VARCHAR)")
+db.commit()
 
 @app.route("/")
 def index():
@@ -78,6 +80,7 @@ def register():
 			return render_template("error.html", message="password mismatch")
 		#check if user does not exist
 		db.execute("CREATE TABLE  IF NOT EXISTS users (id INTEGER PRIMARY KEY autoincrement, user_id VARCHAR, hash VARCHAR(4)")
+		db.commit()
 		rows = db.execute("SELECT * FROM users WHERE user_id = :username", {"username": username}).fetchall()
 		if rows:
 		 	return render_template("error.html", message="Username already taken")
@@ -121,6 +124,7 @@ def review(isbn):
 	comment = request.form.get("review")
 	rating = int(request.form.get("rating"))
 	isbn = isbn
+	
 # 	#do not submit multiple reviews for same book
 	#insert review, rating, isbn, into reviews table at user_id
 	db.execute("INSERT INTO reviews (user_id, isbn, rating, comment) VALUES (:user_id, :isbn, :rating, :comment)", {"user_id": session["user"] ,"isbn": isbn, "rating": rating, "comment": comment})
@@ -148,13 +152,21 @@ def title(info):
 		display = 'None'
 		shows = 'inline'
 	
-	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "qy4xEYfpXzoFkifV1zn3Tg", "isbns": info})
-	if res.status_code != 200:
-		raise Exception("API Request Unsuccessful.")
-	res = res.json()
-	rating = res["books"][0]["work_ratings_count"]
-	avg = res["books"][0]["average_rating"]
-	
+	# res = requests.get("https://api.nytimes.com/svc/books/v3/reviews.json", params={"api-key": "2TWR6W5QsUXABG6JT6uWSsDC7OcmdyTZ", "isbn": info})
+
+	#https://api.nytimes.com/svc/books/v3/reviews.json?author=Stephen+King&api-key=yourkey
+	#2TWR6W5QsUXABG6JT6uWSsDC7OcmdyTZ
+
+	#https://api.nytimes.com/svc/books/v3/reviews.json?isbn=0375822747&api-key=2TWR6W5QsUXABG6JT6uWSsDC7OcmdyTZ
+
+	#9781501110375
+	# if res.status_code != 200:
+	# 	raise Exception("API Request Unsuccessful.")
+	# res = res.json()
+	# rating = res["books"][0]["work_ratings_count"]
+	# avg = res["books"][0]["average_rating"]
+	rating = 5
+	avg = 5
 
 	return render_template("info.html", book = book, comment = comment, display = display, shows=shows, rating = rating, avg =avg)
 
@@ -162,27 +174,33 @@ def title(info):
 def user():
 
 	return render_template("")	
-@app.route("/api/<string:isbn>")
-def book_api(isbn):
-	rows = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
-	if rows is None:
-		return render_template("error.html", message="book not available")
-	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "qy4xEYfpXzoFkifV1zn3Tg", "isbns": isbn})
-	if res.status_code != 200:
-		raise Exception("API Request Unsuccessful.")
-	res = res.json()
-	rating = res["books"][0]["work_ratings_count"]
-	avg = res["books"][0]["average_rating"]
 
-	return jsonify({
-		"title": rows.title,
-    	"author": rows.author,
-    	"year": rows.year,
-    	"isbn": rows.isbn,
-    	"review_count": rating,
-    	"average_score": avg
-		})
+#Good reads disabled API support so this function is not working
+#START
+# @app.route("/api/<string:isbn>")
+# def book_api(isbn):
+# 	rows = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+# 	if rows is None:
+# 		return render_template("error.html", message="book not available")
+# 	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "qy4xEYfpXzoFkifV1zn3Tg", "isbns": isbn})
+# 	if res.status_code != 200:
+# 		raise Exception("API Request Unsuccessful.")
+# 	res = res.json()
+# 	rating = res["books"][0]["work_ratings_count"]
+# 	avg = res["books"][0]["average_rating"]
+
+# 	return jsonify({
+# 		"title": rows.title,
+#     	"author": rows.author,
+#     	"year": rows.year,
+#     	"isbn": rows.isbn,
+#     	"review_count": rating,
+#     	"average_score": avg
+# 		})
 	
+	#implementation ends here
+
+
 	""" res = requests.get("api_link")
 	if res.status_code != 200:
 		raise Exception("ERROR")

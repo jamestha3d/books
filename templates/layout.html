@@ -30,7 +30,7 @@
         <a class="nav-link" href="{{ url_for('logout') }}"> Log Out </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link disabled" style="color:blue">{{session.get("user")}}</a>
+        <a class="nav-link disabled" style="color:blue">{{session.get("user").capitalize()}}</a>
       </li>
       {% else %}
       <li class="nav-item active">
