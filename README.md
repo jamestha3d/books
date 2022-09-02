@@ -1,3 +1,8 @@
-# Project 1
+# Review Hub
 
-Web Programming with Python and JavaScript
+This is Review Hub. 
+
+A book Review Website.
+
+This app also provides an API accessible at:
+
