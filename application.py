@@ -32,8 +32,8 @@ engine = create_engine(uri)
 db = scoped_session(sessionmaker(bind=engine))
 
 #set up log in info
-db.execute("CREATE TABLE IF NOT EXISTS reviews (id SERIAL PRIMARY KEY, user_id VARCHAR, isbn VARCHAR, rating INTEGER, comment VARCHAR)")
-db.commit()
+#db.execute("CREATE TABLE IF NOT EXISTS reviews (id SERIAL PRIMARY KEY, user_id VARCHAR, isbn VARCHAR, rating INTEGER, comment VARCHAR)")
+#db.commit()
 
 @app.route("/")
 def index():
@@ -82,8 +82,8 @@ def register():
 		if password != password2:
 			return render_template("error.html", message="password mismatch")
 		#check if user does not exist
-		db.execute("CREATE TABLE  IF NOT EXISTS users (id INTEGER PRIMARY KEY autoincrement, user_id VARCHAR, hash VARCHAR(4)")
-		db.commit()
+		#db.execute("CREATE TABLE  IF NOT EXISTS users (id INTEGER PRIMARY KEY autoincrement, user_id VARCHAR, hash VARCHAR(4)")
+		#db.commit()
 		rows = db.execute("SELECT * FROM users WHERE user_id = :username", {"username": username}).fetchall()
 		if rows:
 		 	return render_template("error.html", message="Username already taken")
