@@ -25,7 +25,10 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine(os.getenv("DATABASE_URL"))
+uri = os.getenv("DATABASE_URL")
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://")
+engine = create_engine(uri)
 db = scoped_session(sessionmaker(bind=engine))
 
 #set up log in info
